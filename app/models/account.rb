@@ -25,7 +25,5 @@ class Account < ApplicationRecord
     return total
   end
 
-  def self.debits
-  end 
 
 end
