@@ -17,4 +17,15 @@ class Account < ApplicationRecord
     self.balance = total
   end
 
+  def self.total
+    total = 0
+    Account.all.each do |account|
+      total += account.balance
+    end
+    return total
+  end
+
+  def self.debits
+  end 
+
 end
