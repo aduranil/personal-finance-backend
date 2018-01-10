@@ -20,10 +20,6 @@ class ApplicationController < ActionController::API
      end
   end
 
-  def authorized
-    render json: {message: "Not welcome" }, status: 401 unless logged_in?
-  end
-
   def logged_in?
     !!current_user
   end
