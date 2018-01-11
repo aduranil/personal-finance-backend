@@ -17,4 +17,4 @@
 
 # Ignore application configuration
 /config/application.yml
-/db/transactions.csv
+../db/transactions.csv
