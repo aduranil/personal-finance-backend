@@ -12,10 +12,7 @@ class AuthController < ApplicationController
 
   def show
     if current_user
-      render json: {
-        id: current_user.id,
-        username: current_user.username
-      }
+      render json: current_user
     else
       render json: {error: 'Invalid token'}, status: 401
     end

@@ -49,6 +49,10 @@ ActiveRecord::Schema.define(version: 20180110155137) do
     t.integer "account_id"
     t.integer "period_id"
     t.string "debit_or_credit"
+    t.string "category_name"
+    t.string "merchant_name"
+    t.string "account_name"
+    t.date "date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

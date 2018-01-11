@@ -5,6 +5,7 @@ class Account < ApplicationRecord
   has_many :transactions
   has_many :merchants, through: :transactions
   has_many :categories, through: :transactions
+  has_many :periods, through: :transactions
 
   def balance
     total = 0
