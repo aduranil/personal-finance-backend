@@ -11,7 +11,7 @@ class CreateTransactions < ActiveRecord::Migration[5.1]
       t.string :category_name
       t.string :merchant_name
       t.string :account_name
-      t.date :date
+      t.string :period_name
 
       t.timestamps
     end
