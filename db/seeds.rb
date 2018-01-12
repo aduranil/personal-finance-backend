@@ -18,3 +18,10 @@ transactions.each do |row|
       merchant_name: row["Description"],
       account_name: row["Account Name"])
 end
+
+Transaction.create(account_id:1, category: Category.find_or_create_by(name: "balance adjustment"), debit_or_credit: "debit", amount: 200
+0, period_id:1, merchant: Merchant.find_or_create_by(name: "balance adjustment"))
+Transaction.create(account_id:3, category: Category.find_or_create_by(name: "balance adjustment"), debit_or_credit: "credit", amount: 80
+00, period_id:25, merchant: Merchant.find_or_create_by(name: "balance adjustment"))
+Transaction.create(account_id:7, category: Category.find_or_create_by(name: "balance adjustment"), debit_or_credit: "debit", amount: 750
+00, period_id:25, merchant: Merchant.find_or_create_by(name: "balance adjustment"))
