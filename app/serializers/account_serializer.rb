@@ -1,10 +1,7 @@
 class AccountSerializer < ActiveModel::Serializer
-  attributes :id, :user_id, :name, :balance, :total
+  attributes :id, :user_id, :name, :balance
   has_many :transactions
 
-  def total
-    Account.total
-  end
 
   def transaction_data
     object.transactions.map do |transaction|

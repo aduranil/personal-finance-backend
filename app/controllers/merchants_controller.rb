@@ -1,14 +1,13 @@
-class PeriodsController < ApplicationController
+class MerchantsController < ApplicationController
   before_action :set_account, only: [:show]
 
   def index
-    @periods = Period.all
-
-    render json: @periods
+    @merchants = Merchant.all
+    render json: @merchants.sort_by {|merchant| merchant[:name]}
   end
 
   def show
-    render json: @period
+    render json: @merchant
   end
 
 
@@ -16,11 +15,11 @@ class PeriodsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_account
-      @period= Period.find(params[:id])
+      @merchant = Merchant.find(params[:id])
     end
 
     # Only allow a trusted parameter "white list" through.
     def account_params
-      params.require(:period).permit(:date)
+      params.require(:merchant).permit(:name)
     end
 end
