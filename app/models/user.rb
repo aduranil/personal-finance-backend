@@ -4,6 +4,7 @@ class User < ApplicationRecord
   has_many :transactions, through: :accounts
   has_many :categories, through: :transactions
   has_many :merchants, through: :transactions
+  has_many :periods, through: :transactions
 
   def account_balance
     total = 0
@@ -18,28 +19,42 @@ class User < ApplicationRecord
 
   def category_expense_data
     hash = Hash.new(0)
-    categories = self.categories.uniq
-    categories.each do |category|
       self.transactions.each do |transaction|
-        if transaction.category_name == category.name
-          hash[category.name] += transaction.amount.round
+        if hash[transaction.category_name]
+          hash[transaction.category_name] += transaction.amount.round
+        else
+          hash[transaction.category_name] = 0
         end
       end
-    end
-    hash.select {|category, amount| amount < 0}.sort_by {|merchant,amount| amount}
+    hash.sort_by {|name,amount| amount}
   end
 
   def merchant_expense_data
     hash = Hash.new(0)
-    merchants= self.merchants.uniq
-    merchants.each do |merchant|
       self.transactions.each do |transaction|
-        if transaction.merchant_name == merchant.name
-          hash[merchant.name] += transaction.amount.round
+        if hash[transaction.merchant_name]
+          hash[transaction.merchant_name] += transaction.amount.round
+        else
+          hash[transaction.merchant_name] = 0
         end
       end
+    hash.sort_by {|name, amount| amount}
+  end
+
+  def merchant_frequency
+    hash = Hash.new(0)
+    self.merchants.each do |merchant|
+      if hash[merchant.name]
+        hash[merchant.name] +=1
+      else
+        hash[merchant.name] = 0
+      end
     end
-    hash.select {|merchant, amount| amount < 0}.sort_by {|merchant, amount| amount}
+    hash
+  end
+
+  def spend_by_month
+    hash = Hash.new(0)
   end
 
   def average_spend
@@ -54,4 +69,6 @@ class User < ApplicationRecord
   def highest_merchant
     merchant_expense_data[0..2]
   end
+
+
 end
