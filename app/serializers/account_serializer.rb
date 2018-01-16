@@ -3,6 +3,7 @@ class AccountSerializer < ActiveModel::Serializer
   has_many :transactions
 
 
+
   def transaction_data
     object.transactions.map do |transaction|
       {

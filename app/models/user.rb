@@ -1,10 +1,9 @@
+require 'date'
+
 class User < ApplicationRecord
   has_secure_password
   has_many :accounts
   has_many :transactions, through: :accounts
-  has_many :categories, through: :transactions
-  has_many :merchants, through: :transactions
-  has_many :periods, through: :transactions
 
   def account_balance
     total = 0
@@ -26,7 +25,7 @@ class User < ApplicationRecord
           hash[transaction.category_name] = 0
         end
       end
-    hash.sort_by {|name,amount| amount}
+    Hash[hash.sort_by{|k, v| v}.reverse]
   end
 
   def merchant_expense_data
@@ -38,23 +37,45 @@ class User < ApplicationRecord
           hash[transaction.merchant_name] = 0
         end
       end
-    hash.sort_by {|name, amount| amount}
+    Hash[hash.sort_by{|k, v| v}.reverse]
   end
 
   def merchant_frequency
     hash = Hash.new(0)
-    self.merchants.each do |merchant|
-      if hash[merchant.name]
-        hash[merchant.name] +=1
+    self.transactions.each do |transaction|
+      if hash[transaction.merchant_name]
+        hash[transaction.merchant_name] +=1
       else
-        hash[merchant.name] = 0
+        hash[transaction.merchant_name] = 0
       end
     end
-    hash
+    Hash[hash.sort_by{|k, v| v}.reverse]
+  end
+
+  def category_frequency
+    hash = Hash.new(0)
+    self.transactions.each do |transaction|
+      if hash[transaction.category_name]
+        hash[transaction.category_name] +=1
+      else
+        hash[transaction.category_name] = 0
+      end
+    end
+    Hash[hash.sort_by{|k, v| v}.reverse]
   end
 
   def spend_by_month
     hash = Hash.new(0)
+    self.transactions.each do |transaction|
+      d = transaction.period_name
+      d = d.strftime('%b-%Y')
+      if hash[d]
+        hash[d] += transaction.amount.round
+      else
+        hash[d]
+      end
+    end
+    hash
   end
 
   def average_spend
@@ -62,13 +83,12 @@ class User < ApplicationRecord
     amount.round
   end
 
-  def highest_category
-    category_expense_data[0..2]
+  def categories
+    category_frequency.keys
   end
 
-  def highest_merchant
-    merchant_expense_data[0..2]
+  def merchants
+    merchant_frequency.keys
   end
-
 
 end

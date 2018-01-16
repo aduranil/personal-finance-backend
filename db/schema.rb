@@ -23,36 +23,15 @@ ActiveRecord::Schema.define(version: 20180110155137) do
     t.float "balance"
   end
 
-  create_table "categories", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "merchants", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "periods", force: :cascade do |t|
-    t.string "date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "transactions", force: :cascade do |t|
     t.string "description"
     t.float "amount"
-    t.integer "category_id"
-    t.integer "merchant_id"
-    t.integer "account_id"
-    t.integer "period_id"
     t.string "debit_or_credit"
     t.string "category_name"
     t.string "merchant_name"
     t.string "account_name"
-    t.string "period_name"
+    t.integer "account_id"
+    t.date "period_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
