@@ -2,8 +2,11 @@ require 'date'
 
 class User < ApplicationRecord
   has_secure_password
+
   has_many :accounts
   has_many :transactions, through: :accounts
+  validates :password, length: { in: 6..20 }, message: "password must be between 6 and 20 characters"
+  validates :username, uniqueness: true, message: "username already exists"
 
   def account_balance
     total = 0
@@ -79,16 +82,13 @@ class User < ApplicationRecord
   end
 
   def average_spend
-    amount = self.transactions.map {|transaction| transaction[:amount]}.inject{ |sum, el| sum + el }.to_f / self.transactions.size
-    amount.round
+    if self.transactions.length > 0
+      amount = self.transactions.map {|transaction| transaction[:amount]}.inject{ |sum, el| sum + el }.to_f / self.transactions.size
+      amount.round
+    else
+      0
+    end
   end
 
-  def categories
-    category_frequency.keys
-  end
-
-  def merchants
-    merchant_frequency.keys
-  end
 
 end

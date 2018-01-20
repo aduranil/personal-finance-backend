@@ -6,7 +6,7 @@ class AuthController < ApplicationController
     if user && user.authenticate(params[:password])
       render json: {username: user.username, id: user.id, token: issue_token({id: user.id})}
     else
-      render({json: {error: 'User is invalid'}, status: 401})
+      render({json: {error: 'Wrong username or password'}, status: 401})
     end
   end
 

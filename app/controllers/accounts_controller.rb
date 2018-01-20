@@ -16,9 +16,8 @@ class AccountsController < ApplicationController
   # POST /accounts
   def create
     @account = Account.new(account_params)
-
     if @account.save
-      render json: @account
+      render json: current_user
     else
       render json: @account.errors, status: :unprocessable_entity
     end
@@ -36,6 +35,7 @@ class AccountsController < ApplicationController
   # DELETE /accounts/1
   def destroy
     @account.destroy
+    render json: current_user
   end
 
   private
@@ -46,6 +46,6 @@ class AccountsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def account_params
-      params.require(:account).permit(:user_id, :name)
+      params.require(:account).permit(:user_id, :name, :token)
     end
 end
