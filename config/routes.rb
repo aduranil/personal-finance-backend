@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :filereaders
   resources :authenticators
   resources :transactions
   resources :accounts

@@ -25,7 +25,10 @@ class UsersController < ApplicationController
         token: token
       }
     else
-      render json: @user.errors, status: :unprocessable_entity
+      render json: {
+        errors: @user.errors,
+        status: :unprocessable_entity
+      }
     end
   end
 

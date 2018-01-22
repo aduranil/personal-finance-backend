@@ -3,5 +3,5 @@ class UserSerializer < ActiveModel::Serializer
 
   has_many :accounts
   has_many :transactions, through: :accounts
-
+  has_many :filereaders, through: :accounts
 end

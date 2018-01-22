@@ -3,6 +3,7 @@ require 'byebug'
 class Account < ApplicationRecord
   belongs_to :user
   has_many :transactions
+  has_many :filereaders
 
   def balance
     total = 0

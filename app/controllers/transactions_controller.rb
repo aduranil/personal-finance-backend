@@ -16,10 +16,13 @@ class TransactionsController < ApplicationController
   # POST /transactions
   def create
     @transaction = Transaction.new(transaction_params)
-    if @transaction.save
+    if @transaction.valid?
+      @transaction.save
       render json: current_user
     else
-      render json: @transaction.errors, status: :unprocessable_entity
+      render json: {
+        errors: @transaction.errors, status: :unprocessable_entity
+      }
     end
   end
 

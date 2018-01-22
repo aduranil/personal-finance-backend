@@ -5,8 +5,12 @@ class User < ApplicationRecord
 
   has_many :accounts
   has_many :transactions, through: :accounts
-  validates :password, length: { in: 6..20 }, message: "password must be between 6 and 20 characters"
-  validates :username, uniqueness: true, message: "username already exists"
+  has_many :filereaders, through: :accounts
+
+  validates :password, length: { in: 6..20 }
+  validates :username, uniqueness: true
+  validates :username, presence: true
+  validates :password, presence: true
 
   def account_balance
     total = 0
