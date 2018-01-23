@@ -20,22 +20,22 @@ class User < ApplicationRecord
     cf_hash = Hash.new(0)
     hash = Hash.new(0)
     self.transactions.each do |transaction|
-      d = transaction.period_name
-      d = d.strftime('%b-%Y')
+      d = transaction.period_name unless transaction.period_name == nil
+      d = d.strftime('%b-%Y') unless transaction.period_name == nil
 
       if hash[d]
-        hash[d] += transaction.amount.round
+        hash[d] += transaction.amount.round unless transaction.amount == nil
       else
         hash[d]
       end
 
       if transaction.debit_or_credit == "debit"|| !transaction.debit_or_credit
-        transaction.amount = transaction.amount * -1 unless transaction.amount < 0
+        transaction.amount = transaction.amount * -1 unless transaction.amount == nil||transaction.amount < 0
       end
-      total += transaction.amount
+        total += transaction.amount unless transaction.amount == nil
 
       if ced_hash[transaction.category_name]
-        ced_hash[transaction.category_name] += transaction.amount.round
+        ced_hash[transaction.category_name] += transaction.amount.round unless transaction.amount == nil
         cf_hash[transaction.category_name] +=1
       else
         cf_hash[transaction.category_name] = 0
@@ -43,7 +43,7 @@ class User < ApplicationRecord
       end
 
       if med_hash[transaction.merchant_name]
-        med_hash[transaction.merchant_name] += transaction.amount.round
+        med_hash[transaction.merchant_name] += transaction.amount.round unless transaction.amount == nil
         mf_hash[transaction.merchant_name] +=1
       else
         mf_hash[transaction.merchant_name] = 0
@@ -60,12 +60,13 @@ class User < ApplicationRecord
 
 
   def average_spend
+    total = 0
     if self.transactions.length > 0
-      amount = self.transactions.map {|transaction| transaction[:amount]}.inject{ |sum, el| sum + el }.to_f / self.transactions.size
-      amount.round
-    else
-      0
+      self.transactions.each do |t|
+        total += t.amount.round unless t.amount == nil
+      end
     end
+    total / self.transactions.size
   end
 
 

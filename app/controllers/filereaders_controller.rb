@@ -2,6 +2,7 @@ require 'csv'
 require 'smarter_csv'
 require 'classifier'
 require "gsl"
+require 'chronic'
 
 class FilereadersController < ApplicationController
   before_action :set_filereader, only: [:show, :update, :destroy]
@@ -27,58 +28,73 @@ class FilereadersController < ApplicationController
       data = SmarterCSV.process(@filereader.file_upload.path,{ })
       classify = File.read("./classifier.dat")
       new_classifier = Marshal.load(classify)
-      byebug
       data.each do |row|
-        transaction = Transaction.create(account_id: @filereader.account_id, account_name: Account.find(@filereader.account_id).name)
-        byebug
-        if row.keys.include?(:category) && row[:category].length > 1
-          byebug
-          transaction.category_name= row[:category][0]
-        elsif row.keys.include?(:category)
-          byebug
-          transaction.category_name= row[:category]
-        elsif row.keys.include?(:description)
-          byebug
-          transaction.category_name = new_classifier.classify(row[:description])
+        t = Transaction.create(account_id: @filereader.account_id, account_name: Account.find(@filereader.account_id).name)
 
-        elsif row.keys.include?(:name)
-          byebug
-          transaction.category_name = new_classifier.classify(row[:name])
+        if row.keys.include?(:category) && row[:category] != nil && row[:category].length > 1
+          t.category_name= row[:category][0]
+        elsif row.keys.include?(:category) && row[:category] != nil
+          t.category_name= row[:category]
+        # elsif row.keys.include?(:category)
+        #   byebug
+        #   t.category_name= row[:category]
+        # elsif row.keys.include?(:description)
+        #   byebug
+        #   t.category_name = new_classifier.classify(row[:description])
+        #
+        # elsif row.keys.include?(:name)
+        #   byebug
+        #   t.category_name = new_classifier.classify(row[:name])
         else
-          transaction.category_name = "Uncategorized"
+          t.category_name = "Uncategorized"
         end
-        byebug
+
+
         if row.keys.include?(:description)
-          transaction.description = row[:description]
-          transaction.merchant_name = row[:description]
+          t.description = row[:description]
+          t.merchant_name = row[:description]
         end
-        byebug
+
         if row.keys.include?(:date)
-          transaction.period_name = row[:date]
+          byebug
+          d = Chronic.parse(row[:date])
+          if d == nil
+            d = Date.today()
+          end
+          d = d.strftime('%Y-%m-%d')
+          t.period_name = d
         elsif row.keys.include?(:posting_date)
-          transaction.period_name = row[:posting_date]
+          d = Chronic.parse(row[:posting_date])
+          if d == nil
+            d = Date.today()
+          end
+          d = d.strftime('%Y-%m-%d')
+          t.period_name = d
         else
-          Transaction.period_name = Date.today()
+          d = Date.today()
+          d = d.strftime('%Y-%m-%d')
+          t.period_name = d
         end
-        byebug
+
         if row.keys.include?(:amount)
-          transaction.amount = row[:amount]
+          t.amount = row[:amount]
+
         else
-          transaction.amount = row.values.select {|x| Integer(x) rescue nil }[0]
+
+          t.amount = 0
         end
-        byebug
         if row.keys.include?(:debit)
-          transaction.debit_or_credit = "debit"
+          t.debit_or_credit = "debit"
         elsif row.keys.include?(:credit)
-          transaction.debit_or_credit = "credit"
+          t.debit_or_credit = "credit"
         elsif row.keys.include?(:transaction_type)
-          transaction.debit_or_credit = row[:transaction_type]
+          t.debit_or_credit = row[:transaction_type]
         else
-          transaction.debit_or_credit = "debit"
+          t.debit_or_credit = "debit"
         end
-        byebug
-        transaction.save
-        byebug
+
+        t.save
+
       end
       render json: @filereader
     else

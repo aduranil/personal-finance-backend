@@ -35,32 +35,42 @@ class AuthenticatorsController < ApplicationController
     transactions = transaction_response['transactions']
     data = File.read("./classifier.dat")
     new_classifier = Marshal.load(data)
-    byebug
-    transactions = transactions[0..2]
     if transactions.length > 0
       transactions.each do |row|
-        byebug
         transaction = Transaction.create(
           account_id: account.id,
           account_name: account.name,
           amount: row['amount'],
-          period_name: row['date'],
           merchant_name: row['name'],
           description: row['name'])
-        if row.keys.include?(:category) && row[:category].length > 1
-          transaction.category_name= row[:category][0]
-        elsif row.keys.include?(:category)
-          transaction.category_name= row[:category]
-        elsif row.keys.include?(:description)
-          transaction.category_name = new_classifier.classify(row[:description])
-          byebug
-        elsif row.keys.include?(:name)
-          transaction.category_name = new_classifier.classify(row[:name])
+        if row.keys.include?('date')
+          d = Date.parse(row['date'])
+          d = d.strftime('%Y-%m-%d')
+          transaction.period_name = d
+        elsif row.keys.include?('posting_date')
+          d = Date.parse(row['posting_date'])
+          d = d.strftime('%Y-%m-%d')
+          transaction.period_name = d
+        else
+          d = Date.today()
+          d = d.strftime('%Y-%m-%d')
+          transaction.period_name = d
+        end
+        transaction.save
+        if row.keys.include?('category') && row['category'] != nil && row['category'].length > 1
+          transaction.category_name= row['category'][0]
+        elsif row.keys.include?('category') && row['category'] != nil
+          transaction.category_name= row['category']
+        # elsif row.keys.include?('description')
+        #   transaction.category_name = new_classifier.classify(row['description'])
+        #   byebug
+        # elsif row.keys.include?('name')
+        #   transaction.category_name = new_classifier.classify(row['name'])
         else
           transaction.category_name = "Uncategorized"
         end
+
         transaction.save
-        byebug
       end
     end
     if @authenticator.save

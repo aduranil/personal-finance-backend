@@ -49,6 +49,7 @@ GEM
     byebug (9.1.0)
     case_transform (0.2)
       activesupport
+    chronic (0.10.2)
     classifier (1.3.4)
       fast-stemmer (>= 1.0.0)
     climate_control (0.2.0)
@@ -168,9 +169,10 @@ DEPENDENCIES
   active_model_serializers
   bcrypt (~> 3.1.7)
   byebug
+  chronic
   classifier
   figaro
-  gsl
+  gsl (~> 2.1.0)
   jwt
   listen (>= 3.0.5, < 3.2)
   paperclip
