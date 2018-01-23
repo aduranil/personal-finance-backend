@@ -1,6 +1,6 @@
 require 'csv'
 require 'smarter_csv'
-require 'classifier'
+require 'classifier-reborn'
 require "gsl"
 require 'chronic'
 
@@ -28,6 +28,8 @@ class FilereadersController < ApplicationController
       data = SmarterCSV.process(@filereader.file_upload.path,{ })
       classify = File.read("./classifier.dat")
       new_classifier = Marshal.load(classify)
+      merchant = File.read("./classify.dat")
+      merchant_classifier = Marshal.load(merchant)
       data.each do |row|
         t = Transaction.create(account_id: @filereader.account_id, account_name: Account.find(@filereader.account_id).name)
 
@@ -35,18 +37,32 @@ class FilereadersController < ApplicationController
           t.category_name= row[:category][0]
         elsif row.keys.include?(:category) && row[:category] != nil
           t.category_name= row[:category]
-        # elsif row.keys.include?(:category)
-        #   byebug
-        #   t.category_name= row[:category]
-        # elsif row.keys.include?(:description)
-        #   byebug
-        #   t.category_name = new_classifier.classify(row[:description])
-        #
-        # elsif row.keys.include?(:name)
-        #   byebug
-        #   t.category_name = new_classifier.classify(row[:name])
+        elsif row.keys.include?(:category)
+          byebug
+          t.category_name= row[:category]
+        elsif row.keys.include?(:description)
+          byebug
+          t.category_name = new_classifier.classify(row[:description])
+
+        elsif row.keys.include?(:name)
+          byebug
+          t.category_name = new_classifier.classify(row[:name])
         else
           t.category_name = "Uncategorized"
+        end
+
+        if row.keys.include?(:merchant) && row[:merchant] != nil && row[:merchant].length > 1
+          t.merchant_name= row[:merchant][0]
+        elsif row.keys.include?(:merchant) && row[:merchant] != nil
+          t.merchant_name= row[:merchant]
+        elsif row.keys.include?(:merchant)
+          t.merchant_name= row[:merchant]
+        elsif row.keys.include?(:description)
+          t.merchant_name = merchant_classifier.classify(row[:description])
+        elsif row.keys.include?(:name)
+          t.merchant_name = merchant_classifier.classify(row[:name])
+        else
+          t.merchant_name = "Uncategorized"
         end
 
 
@@ -56,7 +72,6 @@ class FilereadersController < ApplicationController
         end
 
         if row.keys.include?(:date)
-          byebug
           d = Chronic.parse(row[:date])
           if d == nil
             d = Date.today()
@@ -83,6 +98,7 @@ class FilereadersController < ApplicationController
 
           t.amount = 0
         end
+
         if row.keys.include?(:debit)
           t.debit_or_credit = "debit"
         elsif row.keys.include?(:credit)
@@ -96,7 +112,7 @@ class FilereadersController < ApplicationController
         t.save
 
       end
-      render json: @filereader
+      render json: current_user
     else
       render json: @filereader.errors, status: :unprocessable_entity
     end

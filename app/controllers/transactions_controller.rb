@@ -16,6 +16,9 @@ class TransactionsController < ApplicationController
   # POST /transactions
   def create
     @transaction = Transaction.new(transaction_params)
+    account = Account.find(@transaction.account_id)
+    account.balance += @transaction.amount
+    account.save
     if @transaction.valid?
       @transaction.save
       render json: current_user
@@ -38,6 +41,9 @@ class TransactionsController < ApplicationController
   # DELETE /transactions/1
   def destroy
     @transaction.destroy
+    account = Account.find(@transaction.account_id)
+    account.balance -= @transaction.amount
+    account.save
     render json: current_user
   end
 

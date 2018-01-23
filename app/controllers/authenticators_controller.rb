@@ -1,6 +1,6 @@
 require 'plaid'
 require 'json'
-require 'classifier'
+require 'classifier-reborn'
 require "gsl"
 
 class AuthenticatorsController < ApplicationController
@@ -34,6 +34,8 @@ class AuthenticatorsController < ApplicationController
     transaction_response = client.transactions.get(access_token, '2016-07-12', '2017-01-09')
     transactions = transaction_response['transactions']
     data = File.read("./classifier.dat")
+    merchant = File.read("./classify.dat")
+    merchant_classifier = Marshal.load(merchant)
     new_classifier = Marshal.load(data)
     if transactions.length > 0
       transactions.each do |row|
@@ -61,21 +63,34 @@ class AuthenticatorsController < ApplicationController
           transaction.category_name= row['category'][0]
         elsif row.keys.include?('category') && row['category'] != nil
           transaction.category_name= row['category']
-        # elsif row.keys.include?('description')
-        #   transaction.category_name = new_classifier.classify(row['description'])
-        #   byebug
-        # elsif row.keys.include?('name')
-        #   transaction.category_name = new_classifier.classify(row['name'])
+        elsif row.keys.include?('description')
+          transaction.category_name = new_classifier.classify(row['description'])
+        elsif row.keys.include?('name')
+          transaction.category_name = new_classifier.classify(row['name'])
         else
           transaction.category_name = "Uncategorized"
         end
 
+        if row.keys.include?('merchant') && row['merchant'] != nil && row['merchant'].length > 1
+          transaction.merchant_name= row['merchant'][0]
+        elsif row.keys.include?('merchant') && row['merchant'] != nil
+          transaction.merchant_name= row['merchant']
+        elsif row.keys.include?('description')
+          transaction.merchant_name = merchant_classifier.classify(row['description'])
+        elsif row.keys.include?('name')
+          transaction.merchant_name = merchant_classifier.classify(row['name'])
+        else
+          transaction.merchant_name = "Uncategorized"
+        end
+
+        account.balance = transaction_response['accounts'][0]['balances']['current']
+        account.save
         transaction.save
       end
     end
     if @authenticator.save
 
-      render json: @authenticator, status: :created, location: @authenticator
+      render json: current_user
     else
       render json: @authenticator.errors, status: :unprocessable_entity
     end
