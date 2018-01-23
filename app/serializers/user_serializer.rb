@@ -1,7 +1,6 @@
 class UserSerializer < ActiveModel::Serializer
-  attributes :spend_by_month, :merchant_frequency, :average_spend,:category_expense_data, :id, :username, :password_digest, :account_balance, :merchant_expense_data, :category_frequency
+  attributes :id, :username, :password_digest, :average_spend, :data
 
   has_many :accounts
   has_many :transactions, through: :accounts
-  has_many :filereaders, through: :accounts
 end

@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::API
 
   def issue_token(payload)
-    JWT.encode(payload, ENV['secret'], 'HS256')
+    JWT.encode(payload, ENV['secret_thing'], 'HS256')
   end
 
   def current_user
@@ -14,7 +14,7 @@ class ApplicationController < ActionController::API
 
   def decoded_token
     begin
-       JWT.decode(request.headers['Authorization'], ENV['secret'], true, { :algorithm => 'HS256' })
+       JWT.decode(request.headers['Authorization'], ENV['secret_thing'], true, { :algorithm => 'HS256' })
      rescue JWT::DecodeError
       [{}]
      end
