@@ -32,7 +32,7 @@ class AuthenticatorsController < ApplicationController
     transaction_response = client.transactions.get(response['access_token'], '2017-09-01', '2018-01-20')
     transactions = transaction_response['transactions']
     data = File.read("./classifier.dat")
-    merchant = File.read("./classify.dat")
+    merchant = File.read("./merchants.dat")
     merchant_classifier = Marshal.load(merchant)
     new_classifier = Marshal.load(data)
     account = Account.create(name:@authenticator.token["institution"]["name"], user_id: @authenticator.user_id)

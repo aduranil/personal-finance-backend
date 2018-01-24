@@ -10,4 +10,4 @@ data.each do |x|
 end
 
 classifier_data = Marshal.dump( merchant)
-File.open("classify.dat", "w") {|f| f.write(classifier_data) }
+File.open("merchants.dat", "w") {|f| f.write(classifier_data) }
