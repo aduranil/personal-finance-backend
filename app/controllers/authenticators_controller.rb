@@ -22,28 +22,26 @@ class AuthenticatorsController < ApplicationController
   def create
 
     @authenticator = Authenticator.new(authenticator_params)
-    client = Plaid::Client.new(env: :sandbox,
+    client = Plaid::Client.new(env: :development,
                            client_id: ENV['client_id'],
                            secret: ENV['secret'],
                            public_key: ENV['public_key'])
 
     token = JSON.parse(@authenticator.token.to_json)["public_token"]
-    account = Account.create(name:@authenticator.token["institution"]["name"], user_id: @authenticator.user_id)
     response = client.item.public_token.exchange(token)
-    access_token = response['access_token']
-    transaction_response = client.transactions.get(access_token, '2016-07-12', '2017-01-09')
+    transaction_response = client.transactions.get(response['access_token'], '2017-09-01', '2018-01-20')
     transactions = transaction_response['transactions']
     data = File.read("./classifier.dat")
     merchant = File.read("./classify.dat")
     merchant_classifier = Marshal.load(merchant)
     new_classifier = Marshal.load(data)
+    account = Account.create(name:@authenticator.token["institution"]["name"], user_id: @authenticator.user_id)
     if transactions.length > 0
       transactions.each do |row|
         transaction = Transaction.create(
           account_id: account.id,
           account_name: account.name,
           amount: row['amount'],
-          merchant_name: row['name'],
           description: row['name'])
         if row.keys.include?('date')
           d = Date.parse(row['date'])

@@ -21,6 +21,7 @@ class FilereadersController < ApplicationController
 
   # POST /filereaders
   def create
+    byebug
     @filereader = Filereader.new(filereader_params)
     if @filereader.save
       data = open(@filereader.file_upload.path).read()
@@ -38,14 +39,14 @@ class FilereadersController < ApplicationController
         elsif row.keys.include?(:category) && row[:category] != nil
           t.category_name= row[:category]
         elsif row.keys.include?(:category)
-          byebug
+
           t.category_name= row[:category]
         elsif row.keys.include?(:description)
-          byebug
+
           t.category_name = new_classifier.classify(row[:description])
 
         elsif row.keys.include?(:name)
-          byebug
+
           t.category_name = new_classifier.classify(row[:name])
         else
           t.category_name = "Uncategorized"
@@ -68,7 +69,6 @@ class FilereadersController < ApplicationController
 
         if row.keys.include?(:description)
           t.description = row[:description]
-          t.merchant_name = row[:description]
         end
 
         if row.keys.include?(:date)
