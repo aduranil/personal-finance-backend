@@ -24,7 +24,6 @@ gem 'plaid'
 gem 'paperclip'
 gem 'smarter_csv'
 gem 'classifier-reborn'
-gem 'gsl', '~> 2.1', '>= 2.1.0.3'
 gem 'chronic'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

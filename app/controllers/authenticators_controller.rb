@@ -1,7 +1,6 @@
 require 'plaid'
 require 'json'
 require 'classifier-reborn'
-require "gsl"
 
 class AuthenticatorsController < ApplicationController
   before_action :set_authenticator, only: [:show, :update, :destroy]

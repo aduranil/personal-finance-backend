@@ -1,7 +1,6 @@
 require 'csv'
 require 'smarter_csv'
 require 'classifier-reborn'
-require "gsl"
 require 'chronic'
 
 class FilereadersController < ApplicationController
@@ -21,7 +20,6 @@ class FilereadersController < ApplicationController
 
   # POST /filereaders
   def create
-    byebug
     @filereader = Filereader.new(filereader_params)
     if @filereader.save
       data = open(@filereader.file_upload.path).read()
