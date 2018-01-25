@@ -25,9 +25,9 @@ class FilereadersController < ApplicationController
       data = open(@filereader.file_upload.path).read()
       File.open(@filereader.file_upload.path, 'w') { |file| file.write(data) }
       data = SmarterCSV.process(@filereader.file_upload.path,{ })
-      classify = File.read("./classifier.dat")
+      classify = File.read("./categories.dat")
       new_classifier = Marshal.load(classify)
-      merchant = File.read("./merchant.dat")
+      merchant = File.read("./merchants.dat")
       merchant_classifier = Marshal.load(merchant)
       data.each do |row|
         t = Transaction.create(account_id: @filereader.account_id, account_name: Account.find(@filereader.account_id).name)
