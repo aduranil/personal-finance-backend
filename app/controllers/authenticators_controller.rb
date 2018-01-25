@@ -19,9 +19,8 @@ class AuthenticatorsController < ApplicationController
 
   # POST /authenticators
   def create
-
     @authenticator = Authenticator.new(authenticator_params)
-    client = Plaid::Client.new(env: :development,
+    client = Plaid::Client.new(env: :sandbox,
                            client_id: ENV['client_id'],
                            secret: ENV['secret'],
                            public_key: ENV['public_key'])
@@ -30,7 +29,7 @@ class AuthenticatorsController < ApplicationController
     response = client.item.public_token.exchange(token)
     transaction_response = client.transactions.get(response['access_token'], '2017-09-01', '2018-01-20')
     transactions = transaction_response['transactions']
-    data = File.read("./classifier.dat")
+    data = File.read("./categories.dat")
     merchant = File.read("./merchants.dat")
     merchant_classifier = Marshal.load(merchant)
     new_classifier = Marshal.load(data)
