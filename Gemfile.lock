@@ -69,6 +69,7 @@ GEM
       thor (~> 0.14)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
+    gsl (2.1.0.3)
     i18n (0.9.3)
       concurrent-ruby (~> 1.0)
     jsonapi-renderer (0.2.0)
@@ -171,6 +172,7 @@ DEPENDENCIES
   chronic
   classifier-reborn
   figaro
+  gsl
   jwt
   listen (>= 3.0.5, < 3.2)
   paperclip

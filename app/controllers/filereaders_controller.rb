@@ -2,6 +2,7 @@ require 'csv'
 require 'smarter_csv'
 require 'classifier-reborn'
 require 'chronic'
+require 'gsl'
 
 class FilereadersController < ApplicationController
   before_action :set_filereader, only: [:show, :update, :destroy]
@@ -25,9 +26,9 @@ class FilereadersController < ApplicationController
       data = open(@filereader.file_upload.path).read()
       File.open(@filereader.file_upload.path, 'w') { |file| file.write(data) }
       data = SmarterCSV.process(@filereader.file_upload.path,{ })
-      classify = File.read("./categories.dat")
+      classify = File.read("./categories_lsi.dat")
       new_classifier = Marshal.load(classify)
-      merchant = File.read("./merchants.dat")
+      merchant = File.read("./merchants_lsi.dat")
       merchant_classifier = Marshal.load(merchant)
       data.each do |row|
         t = Transaction.create(account_id: @filereader.account_id, account_name: Account.find(@filereader.account_id).name)

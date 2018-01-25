@@ -1,6 +1,7 @@
 require 'plaid'
 require 'json'
 require 'classifier-reborn'
+require 'gsl'
 
 class AuthenticatorsController < ApplicationController
   before_action :set_authenticator, only: [:show, :update, :destroy]
@@ -29,8 +30,8 @@ class AuthenticatorsController < ApplicationController
     response = client.item.public_token.exchange(token)
     transaction_response = client.transactions.get(response['access_token'], '2017-09-01', '2018-01-20')
     transactions = transaction_response['transactions']
-    data = File.read("./categories.dat")
-    merchant = File.read("./merchants.dat")
+    data = File.read("./categories_lsi.dat")
+    merchant = File.read("./merchants_lsi.dat")
     merchant_classifier = Marshal.load(merchant)
     new_classifier = Marshal.load(data)
     account = Account.create(name:@authenticator.token["institution"]["name"], user_id: @authenticator.user_id)
