@@ -21,7 +21,7 @@ class AuthenticatorsController < ApplicationController
   # POST /authenticators
   def create
     @authenticator = Authenticator.new(authenticator_params)
-    client = Plaid::Client.new(env: :sandbox,
+    client = Plaid::Client.new(env: :development,
                            client_id: ENV['client_id'],
                            secret: ENV['secret'],
                            public_key: ENV['public_key'])
