@@ -28,7 +28,7 @@ class AuthenticatorsController < ApplicationController
 
     token = JSON.parse(@authenticator.token.to_json)["public_token"]
     response = client.item.public_token.exchange(token)
-    transaction_response = client.transactions.get(response['access_token'], '2017-09-01', '2018-01-20')
+    transaction_response = client.transactions.get(response['access_token'], '2015-09-01', '2018-01-20')
     transactions = transaction_response['transactions']
     data = File.read("./categories_lsi.dat")
     merchant = File.read("./merchants_lsi.dat")
